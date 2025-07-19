@@ -45,3 +45,150 @@ If you have specific questions or need assistance with a particular aspect of fa
 [7]: https://arxiv.org/abs/2306.12014?utm_source=chatgpt.com "3HAN: A Deep Neural Network for Fake News Detection"
 [8]: https://arxiv.org/abs/1905.04749?utm_source=chatgpt.com "A Benchmark Study of Machine Learning Models for Online Fake News Detection"
 [9]: https://arxiv.org/abs/1705.00648?utm_source=chatgpt.com "\"Liar, Liar Pants on Fire\": A New Benchmark Dataset for Fake News Detection"
+
+
+
+
+
+# 🚚 Delivery Time Estimation using Machine Learning
+
+This project uses machine learning techniques to estimate the delivery time of food orders based on multiple inputs such as the delivery person's age, rating, vehicle type, order type, and geographic distance between restaurant and customer.
+
+---
+
+## 📘 Project Overview
+
+The objective of this project is to build a machine learning model that can predict the estimated time required for a food delivery, based on structured data inputs. It involves:
+
+* Data preprocessing
+* Feature engineering
+* Model training using Keras
+* Deployment-ready preprocessing and inference pipeline
+
+---
+
+## 📂 Dataset Description
+
+Features used in the model:
+
+* `Delivery_person_Age`: Age of the delivery person
+* `Delivery_person_Ratings`: Average customer rating
+* `Type_of_order`: e.g., Snack, Meal, Beverages
+* `Type_of_vehicle`: e.g., Bike, Scooter
+* `Restaurant_latitude` and `Restaurant_longitude`: Coordinates of the restaurant
+* `Delivery_location_latitude` and `Delivery_location_longitude`: Coordinates of the delivery location
+
+Derived feature:
+
+* `distance`: Calculated using the **Spherical Law of Cosines**
+
+---
+
+## 🛠️ Data Preprocessing Pipeline
+
+To ensure consistent preprocessing during training and inference, a Scikit-learn pipeline is created and saved.
+
+### 🔹 Features:
+
+* **Numerical**:
+
+  * `Delivery_person_Age`
+  * `Delivery_person_Ratings`
+  * `distance`
+* **Categorical**:
+
+  * `Type_of_order`
+  * `Type_of_vehicle`
+
+### 🔧 Transformations:
+
+* Numerical features are scaled using `MinMaxScaler`
+* Categorical features are one-hot encoded using `OneHotEncoder` with `handle_unknown='ignore'`
+
+### 💾 Pipeline Code:
+
+```python
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
+import joblib
+
+numeric_features = ['Delivery_person_Age', 'Delivery_person_Ratings', 'distance']
+categorical_features = ['Type_of_order', 'Type_of_vehicle']
+
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('num', MinMaxScaler(), numeric_features),
+        ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
+    ]
+)
+
+pipeline = Pipeline(steps=[
+    ('preprocessor', preprocessor)
+])
+
+pipeline.fit(X)  # Replace X with your input features DataFrame
+joblib.dump(pipeline, 'preprocessing_pipeline.pkl')
+```
+
+---
+
+## 🧠 Model Details
+
+A deep learning model was built using Keras (`model-final.h5`) to predict scaled delivery time. It was trained using preprocessed input data, and the output was inverse transformed using a saved `target_scaler.pkl`.
+
+---
+
+## 📦 Files Included
+
+* `model-final.h5`: Trained Keras model
+* `preprocessing_pipeline.pkl`: Scikit-learn pipeline with MinMaxScaler and OneHotEncoder
+* `target_scaler.pkl`: Scaler for the model's output
+* `app.py`: Flask application for deployment
+* `index.html`: Frontend interface for input and prediction
+
+---
+
+## 🚀 How to Run
+
+1. Clone this repo or copy files locally.
+2. Install required packages:
+
+   ```bash
+   pip install flask numpy pandas scikit-learn tensorflow joblib
+   ```
+3. Run the Flask app:
+
+   ```bash
+   python app.py
+   ```
+4. Open in browser: `http://127.0.0.1:5000`
+
+---
+
+## 🧪 Sample Prediction Flow
+
+1. User submits form data (age, rating, coordinates, order/vehicle types).
+2. Distance is calculated using geographic coordinates.
+3. Data is preprocessed using the saved pipeline.
+4. Preprocessed data is passed into the Keras model.
+5. Output is inverse-scaled and returned as estimated delivery time.
+
+---
+
+## 📌 Future Improvements
+
+* Add support for time-related features (hour of the day, day of week)
+* Use real route distance from APIs (e.g., Google Maps)
+* Extend to handle live data and integrate SMS/alerts
+* Convert to a mobile-friendly responsive app
+
+---
+
+## 👤 Author
+
+**Dhavasig Dhavasi**
+🔗 [Kaggle Profile](https://www.kaggle.com/dhavasigdhavasi)
+
+---
+
